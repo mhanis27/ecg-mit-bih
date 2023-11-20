@@ -2,7 +2,8 @@ from __future__ import division, print_function
 from keras.models import Model
 from keras.layers import Input, Conv1D, Dense, add, Flatten, Dropout,MaxPooling1D, Activation, BatchNormalization, Lambda
 from keras import backend as K
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
+from keras.optimizers.legacy import Adam
 
 def ECG_model(config):
     """ 
@@ -85,14 +86,15 @@ def ECG_model(config):
         return layer
 
     def output_block(layer, config):
-        from keras.layers.wrappers import TimeDistributed
+        # from keras.layers.wrappers import TimeDistributed
+        from keras.layers import TimeDistributed
         layer = BatchNormalization()(layer)
         layer = Activation('relu')(layer)
         #layer = Flatten()(layer)
         outputs = TimeDistributed(Dense(len_classes, activation='softmax'))(layer)
         model = Model(inputs=inputs, outputs=outputs)
         
-        adam = Adam(lr=0.1, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+        adam = Adam(learning_rate=0.1, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
         model.compile(optimizer= adam,
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
